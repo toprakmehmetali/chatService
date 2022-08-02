@@ -23,13 +23,12 @@ namespace server
 
         public static void StartServer()
         {
-            
             InitializeServerData();
             serverListener = new TcpListener(IPAddress.Any, _port);
             Console.WriteLine($"Server Kuruldu ! : Maksimum user sayısı {_maxUser} : Dinlenen port {_port}");
             serverListener.Start();
-            Console.WriteLine("Server Başlatıldı");
-            Console.WriteLine("Kullanıcılar Bekleniyor");
+            Console.WriteLine(Messages.Messages.ServerStart);
+            Console.WriteLine(Messages.Messages.WaitingForUsersToConnect);
         }
 
         public static void ListenServer()
@@ -49,8 +48,9 @@ namespace server
                     return;
                 }
             }
+            
             socket.Close();
-            Console.WriteLine("server Dolu.");
+            Console.WriteLine(Messages.Messages.ServerFull);
         }
 
         public static void InitializeServerData()
@@ -61,15 +61,20 @@ namespace server
             }
         }
 
-        public static void SendMessageAllSocket(int id ,string Message)
+        public static void SendMessageAllSocket(int id ,string message)
         {
             foreach (var client in clients)
             {
                 if (client.id != id)
                 {
-                    client.SendMessage(Message);
+                    client.SendMessage(message);
                 }
             }
+        }
+
+        public static void SendMessageById(int id, string messages)
+        {
+            clients[id].SendMessage(messages);
         }
         
         public static void SetServerSettings()

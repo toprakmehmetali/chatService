@@ -17,8 +17,6 @@ namespace client
         public static TcpClient socket = new TcpClient();
         public static NetworkStream networkStream;
         public static byte[] buffer = new byte[4096];
-        private static List<ConfigJson> configJson;
-        public static ConfigJson ConfigJson;
         public static void Connect()
         {
             socket.BeginConnect(ServerSettings.Host,ServerSettings.Port,new AsyncCallback(ConnectCallBack),null);

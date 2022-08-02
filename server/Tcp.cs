@@ -29,8 +29,8 @@ namespace server
             socket.Close();
             stream = null;
             socket = null;
-            Server.SendMessageAllSocket(id,$"{id} User Offline");
-            Console.WriteLine($"{id} kullanıcı ayrıldı.");
+            Server.SendMessageAllSocket(id,$"{id}. {Messages.Messages.UserOffline}");
+            Console.WriteLine($"{id}. {Messages.Messages.UserOffline}.");
         }
         public void Connect(TcpClient socket)
         {
@@ -39,8 +39,8 @@ namespace server
             socket.SendBufferSize = buffersize;
             stream = socket.GetStream();
             stream.BeginRead(buffer, 0, buffersize, new AsyncCallback(ReveiveCallBack), null);
-            Server.SendMessageAllSocket(id, $"{id} User Online");
-            Console.WriteLine($"Bağlantı gerçekleşti.{socket.Client.RemoteEndPoint}");
+            Server.SendMessageAllSocket(id, $"{id} {Messages.Messages.UserOnline}");
+            Console.WriteLine($"{Messages.Messages.UserConnected} {socket.Client.RemoteEndPoint}");
         }
 
         public void ReveiveCallBack(IAsyncResult asyncResult)
@@ -68,14 +68,14 @@ namespace server
                     warnCount += 1;
                     if (warnCount ==2)
                     {
-                        SendMessage("Sunucudan atıldın.");
+                        SendMessage(Messages.Messages.ServerKicked);
                         Server.clients[id].Disconnect();
                         warnCount = 0;
                         
                     }
                    else
                    {
-                       SendMessage("Aynı anda birden fazla yazı gönderemezsiniz.");
+                       SendMessage(Messages.Messages.NotSendQuickMessage);
                    }
                 }
 
