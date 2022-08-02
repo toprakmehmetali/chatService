@@ -41,7 +41,7 @@ namespace server
 
             stream = socket.GetStream();
             stream.BeginRead(buffer, 0, buffersize, new AsyncCallback(ReveiveCallBack), null);
-            Server.SendMessageAllSocket(id, $"{id} {Messages.Messages.UserOnline}");
+            Server.SendMessageAllSocket(id, $"{Name} isimli {Messages.Messages.UserOnline}");
             Console.WriteLine($"{Messages.Messages.UserConnected} {socket.Client.RemoteEndPoint}");
         }
 
@@ -59,8 +59,8 @@ namespace server
 
                 byte[] data = new byte[dataLength];
                 Array.Copy(buffer, data, dataLength);
-                string gelenmetin = Encoding.UTF8.GetString(data);
-                DataTransferObject dataTransferObject = JsonConvert.DeserializeObject<DataTransferObject>(gelenmetin);
+                string incomingText = Encoding.UTF8.GetString(data);
+                DataTransferObject dataTransferObject = JsonConvert.DeserializeObject<DataTransferObject>(incomingText);
                 if ( !Equals(lastMessageTime.ToString(), DateTime.Now.ToString()) )
                 {
                     lastMessageTime = DateTime.Now;
@@ -126,10 +126,13 @@ namespace server
             switch (dataTransferObject.RequestType)
             {
                 case "message":
-                    Server.SendMessageAllSocket(id,Name+": "+dataTransferObject.Request);
+                    Server.SendMessageAllSocket(id,Name+" : "+dataTransferObject.Request);
                     break;
                 case "rename":
+                    Server.SendMessageAllSocket(id,$"{Name} isimli kullanıcı adını {dataTransferObject.Request} olarak değiştirdi.");
                     Name = dataTransferObject.Request;
+                    SendMessage(Messages.Messages.NameChanged);
+                    
                     break;
             }
         }

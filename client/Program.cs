@@ -9,7 +9,7 @@ namespace server
     {
         static void Main(string[] args)
         {
-            DataTransferObject dataTransferObject = new DataTransferObject();
+            
             Config.LoadConfigJson();
             ServerSettings.SetServerSettings();
             Client.Connect();
@@ -18,23 +18,10 @@ namespace server
             while (true)
             {
                 
-                if (Client.socket.Connected)
+                if (Client.networkStream.CanRead)
                 {
-                    
-                    string metin = Console.ReadLine();
-                    if (metin == "rename")
-                    {
-                        dataTransferObject.RequestType = "rename";
-                        Console.WriteLine("Yeni adınızı giriniz.");
-                        dataTransferObject.Request = Console.ReadLine();
-                        Client.SendMessage(dataTransferObject);
-                        continue;
-                    }
-
-                    dataTransferObject.RequestType = "message";
-                    dataTransferObject.Request = metin;
-                    Client.SendMessage(dataTransferObject);
-
+                    string text = Console.ReadLine();
+                    Requests.Request(text);
                 }
             }
             

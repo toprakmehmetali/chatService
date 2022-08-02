@@ -58,6 +58,7 @@ namespace server
             for (int i = 0; i < _maxUser; i++)
             {
                 clients[i] = new Tcp(i);
+                clients[i].Name = $"{i}.Anonymous";
             }
         }
 
@@ -83,7 +84,7 @@ namespace server
             _port = Config.Config.ConfigJson.ServerSettings.Port;
         }
 
-        public static void SetClientsEmptyArray()
+        public static void SetEmptyArrayClients()
         {
             clients = new Tcp[_maxUser];
         }

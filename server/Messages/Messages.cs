@@ -16,6 +16,6 @@ namespace server.Messages
         public static string NotSendQuickMessage = "Aynı anda birden fazla yazı gönderemezsiniz.";
         public static string UserOffline = "Kullanıcı çevrimdışı.";
         public static string UserOnline = "Kullanıcı çevrimiçi.";
-
+        public static string NameChanged = "Kullanıcı adınız değiştirildi.";
     }
 }

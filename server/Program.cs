@@ -6,7 +6,7 @@
         {
             Config.Config.LoadConfigJson();
             Server.SetServerSettings();
-            Server.SetClientsEmptyArray();
+            Server.SetEmptyArrayClients();
             Server.StartServer();
             while (true)
             {
