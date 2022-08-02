@@ -4,7 +4,10 @@
     {
         static void Main(string[] args)
         {
-            Server.StartServer(500,8081);
+            Config.Config.LoadConfigJson();
+            Server.SetServerSettings();
+            Server.SetClientsEmptyArray();
+            Server.StartServer();
             while (true)
             {
                Server.ListenServer(); 

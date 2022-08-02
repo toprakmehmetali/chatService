@@ -1,4 +1,5 @@
 ﻿using client;
+using client.Config;
 
 namespace server
 {
@@ -6,7 +7,8 @@ namespace server
     {
         static void Main(string[] args)
         {
-            ServerSettings.ServerAyarla("127.0.0.1", 8081);
+            Config.LoadConfigJson();
+            ServerSettings.SetServerSettings();
             Client.Connect();
             Console.WriteLine("Bağlanıldı");
             Console.WriteLine("metin girin");

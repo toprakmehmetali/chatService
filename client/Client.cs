@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using client.Models;
+using Newtonsoft.Json;
+using server;
 
 namespace client
 {
@@ -13,6 +17,8 @@ namespace client
         public static TcpClient socket = new TcpClient();
         public static NetworkStream networkStream;
         public static byte[] buffer = new byte[4096];
+        private static List<ConfigJson> configJson;
+        public static ConfigJson ConfigJson;
         public static void Connect()
         {
             socket.BeginConnect(ServerSettings.Host,ServerSettings.Port,new AsyncCallback(ConnectCallBack),null);
@@ -77,5 +83,6 @@ namespace client
         {
             networkStream.EndWrite(asyncResult);
         }
+        
     }
 }

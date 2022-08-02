@@ -7,23 +7,23 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using server.Models;
+using server.Config;
 
 namespace server
 {
     public class Server
     {
         public static int _maxUser { get;private set; }
-
         public static int _port { get; private set;}
-
         public static TcpListener serverListener;
 
-        public static SortedDictionary<int, Client> clients = new SortedDictionary<int, Client>();
+        public static Tcp[] clients;
 
-        public static void StartServer(int maxUser, int port)
+        public static void StartServer()
         {
-            _maxUser=maxUser;
-            _port=port;
+            
             InitializeServerData();
             serverListener = new TcpListener(IPAddress.Any, _port);
             Console.WriteLine($"Server Kuruldu ! : Maksimum user sayısı {_maxUser} : Dinlenen port {_port}");
@@ -43,9 +43,9 @@ namespace server
             TcpClient socket = serverListener.EndAcceptTcpClient(asyncResult);
             foreach (var client in clients)
             {
-                if (client.Value.tcp.socket == null)
+                if (client.socket == null)
                 {
-                    client.Value.tcp.Connect(socket);
+                    client.Connect(socket);
                     return;
                 }
             }
@@ -57,20 +57,30 @@ namespace server
         {
             for (int i = 0; i < _maxUser; i++)
             {
-               clients.Add(i,new Client(i));
+                clients[i] = new Tcp(i);
             }
         }
 
-        public static void SendAllSocketMessage(int id ,string Message)
+        public static void SendMessageAllSocket(int id ,string Message)
         {
             foreach (var client in clients)
             {
-                if (client.Value.id != id)
+                if (client.id != id)
                 {
-                    client.Value.tcp.SendMessage(Message);
+                    client.SendMessage(Message);
                 }
-                
             }
+        }
+        
+        public static void SetServerSettings()
+        {
+            _maxUser = Config.Config.ConfigJson.ServerSettings.MaxUser;
+            _port = Config.Config.ConfigJson.ServerSettings.Port;
+        }
+
+        public static void SetClientsEmptyArray()
+        {
+            clients = new Tcp[_maxUser];
         }
     }
 }

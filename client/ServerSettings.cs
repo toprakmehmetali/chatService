@@ -11,10 +11,10 @@ namespace client
         public static string Host { get; set; }
         public static int Port { get; set; }
 
-        public static void ServerAyarla(string _host,int _port)
+        public static void SetServerSettings()
         {
-            Host=_host;
-            Port = _port;
+            Host = Config.Config.ConfigJson.ServerSettings.Host;
+            Port = Config.Config.ConfigJson.ServerSettings.Port;
         }
     }
 }

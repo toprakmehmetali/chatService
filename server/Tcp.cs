@@ -9,7 +9,7 @@ namespace server
 {
     public class Tcp
     {
-        public readonly int id;
+        public int id;
         public string Name;
         public static int buffersize = 4096;
         public TcpClient socket;
@@ -29,7 +29,7 @@ namespace server
             socket.Close();
             stream = null;
             socket = null;
-
+            Server.SendMessageAllSocket(id,$"{id} User Offline");
             Console.WriteLine($"{id} kullanıcı ayrıldı.");
         }
         public void Connect(TcpClient socket)
@@ -39,7 +39,7 @@ namespace server
             socket.SendBufferSize = buffersize;
             stream = socket.GetStream();
             stream.BeginRead(buffer, 0, buffersize, new AsyncCallback(ReveiveCallBack), null);
-            
+            Server.SendMessageAllSocket(id, $"{id} User Online");
             Console.WriteLine($"Bağlantı gerçekleşti.{socket.Client.RemoteEndPoint}");
         }
 
@@ -61,7 +61,7 @@ namespace server
                 if ( !Equals(lastMessageTime.ToString(), DateTime.Now.ToString()) )
                 {
                     lastMessageTime = DateTime.Now;
-                    Server.SendAllSocketMessage(id,$"{id}:{gelenmetin}");
+                    Server.SendMessageAllSocket(id,$"{id}:{gelenmetin}");
                 }
                 else
                 {
@@ -96,11 +96,20 @@ namespace server
 
         public void SendMessage(string Message)
         {
-            if (stream != null)
+            try
             {
+                if (stream != null)
+                {
                     stream.BeginWrite(Encoding.UTF8.GetBytes(Message), 0,
                 Encoding.UTF8.GetBytes(Message).Length, SendCallBack, null);
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             
         }
         public void SendCallBack(IAsyncResult asyncResult)
