@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using server.Models;
 
 namespace server
 {
@@ -15,7 +17,6 @@ namespace server
         public TcpClient socket;
         public NetworkStream stream;
         public byte[] buffer = new byte[buffersize];
-        public byte[] bufferSend = new byte[buffersize];
         public DateTime lastMessageTime;
         public int warnCount = 0;
 
@@ -37,6 +38,7 @@ namespace server
             this.socket = socket;
             socket.ReceiveBufferSize = buffersize;
             socket.SendBufferSize = buffersize;
+
             stream = socket.GetStream();
             stream.BeginRead(buffer, 0, buffersize, new AsyncCallback(ReveiveCallBack), null);
             Server.SendMessageAllSocket(id, $"{id} {Messages.Messages.UserOnline}");
@@ -47,21 +49,22 @@ namespace server
         {
             try
             {
-                int gelenVeriUzunluğu = stream.EndRead(asyncResult);
-                if (gelenVeriUzunluğu <= 0)
+                int dataLength = stream.EndRead(asyncResult);
+                if (dataLength <= 0)
                 {
                     Server.clients[id].Disconnect();
                     Console.WriteLine("Bağlantı Koptu.");
                     return;
                 }
 
-                byte[] data = new byte[gelenVeriUzunluğu];
-                Array.Copy(buffer, data, gelenVeriUzunluğu);
+                byte[] data = new byte[dataLength];
+                Array.Copy(buffer, data, dataLength);
                 string gelenmetin = Encoding.UTF8.GetString(data);
+                DataTransferObject dataTransferObject = JsonConvert.DeserializeObject<DataTransferObject>(gelenmetin);
                 if ( !Equals(lastMessageTime.ToString(), DateTime.Now.ToString()) )
                 {
                     lastMessageTime = DateTime.Now;
-                    Server.SendMessageAllSocket(id,$"{id}:{gelenmetin}");
+                    RequestType(dataTransferObject);
                 }
                 else
                 {
@@ -116,6 +119,19 @@ namespace server
         {
             stream.EndWrite(asyncResult);
             
+        }
+
+        public void RequestType(DataTransferObject dataTransferObject)
+        {
+            switch (dataTransferObject.RequestType)
+            {
+                case "message":
+                    Server.SendMessageAllSocket(id,Name+": "+dataTransferObject.Request);
+                    break;
+                case "rename":
+                    Name = dataTransferObject.Request;
+                    break;
+            }
         }
     }
 }

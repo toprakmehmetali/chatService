@@ -62,9 +62,10 @@ namespace client
                 return;
             }
         }
-        public static void SendMessage(string jsonMetin)
+        public static void SendMessage(DataTransferObject Dto)
         {
-            var result = Encoding.UTF8.GetBytes(jsonMetin);
+            string JsonString = JsonConvert.SerializeObject(Dto);
+            var result = Encoding.UTF8.GetBytes(JsonString);
 
             try
             {
