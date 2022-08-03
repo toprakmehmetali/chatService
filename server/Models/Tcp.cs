@@ -11,11 +11,15 @@ namespace server.Models
     {
         public int Id;
         public static int Buffersize = 4096;
-        public byte[] Buffer = new byte[Buffersize];
+        public byte[] Buffer ;
         public TcpClient Socket;
         public NetworkStream Stream;
         public byte[] Data;
 
+        public Tcp()
+        {
+            Buffer = new byte[Buffersize];
+        }
         /*
          Kullanıcıya mesaj göndermeyi sağlar
          */

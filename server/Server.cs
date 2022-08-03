@@ -37,10 +37,9 @@ namespace server
 
         public static void ListenServer()
         {
-            while (true)
-            {
+            
                 serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
-            }
+            
         }
 
 
@@ -53,6 +52,7 @@ namespace server
                 if (client.Socket == null)
                 {
                     client.Connect(socket);
+                    serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
                     return;
                 }
             }
@@ -61,6 +61,7 @@ namespace server
             tcp.SendMessage("Sunucu dolu.");
             tcp.DisconnectSocket();
             Console.WriteLine(Messages.Messages.ServerFull);
+            serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
         }
 
 
