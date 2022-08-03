@@ -23,6 +23,7 @@ namespace server
 
         public static Tcp tcp;
 
+
         public static void StartServer()
         {
             InitializeServerData();
@@ -33,6 +34,7 @@ namespace server
             Console.WriteLine(Messages.Messages.WaitingForUsersToConnect);
         }
 
+
         public static void ListenServer()
         {
             while (true)
@@ -41,6 +43,8 @@ namespace server
             }
         }
 
+
+        // Sunucuya bağlantı isteklerini karşılar. Duruma göre kabul eder veya sunucu dolu der bağlantıyı kapatır.
         public static void AcceptClientCallBack(IAsyncResult asyncResult)
         {
             TcpClient socket = serverListener.EndAcceptTcpClient(asyncResult);
@@ -59,6 +63,8 @@ namespace server
             Console.WriteLine(Messages.Messages.ServerFull);
         }
 
+
+        // Clientsi boş TcpUser nesneleri ile doldurur. Id ve Geçici isim ataması yapar.
         public static void InitializeServerData()
         {
             for (int i = 0; i < _maxUser; i++)
@@ -68,6 +74,8 @@ namespace server
             }
         }
 
+
+        // Bütün clientlere mesaj gönderir
         public static void SendMessageAllSocket(int id ,string message)
         {
             foreach (var client in clients)
@@ -79,10 +87,15 @@ namespace server
             }
         }
 
+
+        // Id numarasını kullanarak kullanıcılara özel mesaj gönderir
         public static void SendMessageById(int id, string message)
         {
             clients[id].SendMessage(message);
         }
+
+
+        // kullanıcı ismine göre özel mesaj gönderir
         public static void SendMessageByName(string name,string message)
         {
             foreach (var client in clients)
@@ -94,12 +107,17 @@ namespace server
             }
         }
 
+
+        // Konfigürasyon dosyasından yayın yapılacak port ve maksimum kullanıcı sayısı çekilir
         public static void SetServerSettings()
         {
             _maxUser = Config.Config.ConfigJson.ServerSettings.MaxUser;
             _port = Config.Config.ConfigJson.ServerSettings.Port;
         }
 
+
+        /* Maksimum kullanıcı sayısına göre TcpUser array ve
+         sunucuya bağlanamayan kişilere cevap verebilmek için tcp nesnesi oluşturur.*/
         public static void SetEmptyArrayClients()
         {
             clients = new TcpUser[_maxUser];

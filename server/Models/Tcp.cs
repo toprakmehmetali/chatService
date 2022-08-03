@@ -15,9 +15,10 @@ namespace server.Models
         public TcpClient Socket;
         public NetworkStream Stream;
         public byte[] Data;
-        public string InComingText;
-        public bool ReadFlag;
 
+        /*
+         Kullanıcıya mesaj göndermeyi sağlar
+         */
         public void SendMessage(string Message)
         {
             try
@@ -55,12 +56,17 @@ namespace server.Models
         {
             Socket.Close();
         }
-
+        /*
+         Stream Okuma işlemini başlatır
+         */
         public void ReadStream()
         {
             Stream.BeginRead(Buffer, 0, Buffersize, ReveiveCallBack, null);
         }
 
+        /*
+         Okunan veriyi string ifade olarak virtual metoda yollar.
+        */
         private void ReveiveCallBack(IAsyncResult asyncResult)
         {
             try
@@ -74,8 +80,8 @@ namespace server.Models
                 }
                 Data = new byte[dataLength];
                 Array.Copy(Buffer, Data, dataLength);
-                InComingText = Encoding.UTF8.GetString(Data);
-                StartStreamRead();
+                string InComingText = Encoding.UTF8.GetString(Data);
+                StartStreamRead(InComingText);
                 if (Stream != null)
                 {
                     ReadStream();
@@ -89,7 +95,10 @@ namespace server.Models
 
         }
 
-        public virtual void StartStreamRead()
+        /*
+         Okuma yapıldığında ne yapılacak ise metod ezilerek işlemin gerçekleşmesi sağlanır
+         */
+        public virtual void StartStreamRead(string InComingText)
         {
 
         }

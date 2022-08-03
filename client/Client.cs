@@ -16,6 +16,7 @@ namespace client
     {
         public static TcpClient socket = new TcpClient();
         public static NetworkStream networkStream;
+        public static bool ConFlag = false;
         public static byte[] buffer = new byte[4096];
         public static void Connect()
         {
@@ -25,35 +26,51 @@ namespace client
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                ConFlag = true;
             }
-            
+
         }
 
+        /*
+         Sunucu bağlantı işlemini yapar.
+         Sunucu okuma işlemi başlatır.
+         */
         private static void ConnectCallBack(IAsyncResult asyncResult)
         {
-            socket.EndConnect(asyncResult);
-            networkStream = socket.GetStream();
-            Read();
-            
+            try
+            {
+                socket.EndConnect(asyncResult);
+                networkStream = socket.GetStream();
+                Read();
+            }
+            catch (Exception e)
+            {
+                ConFlag = true;
+            }
+
         }
 
+        /*
+         Sunucudan gelen verilerin okuma işlemini başlatır.
+         */
         public static void Read()
         {
             networkStream.BeginRead(buffer, 0, 4096, ReveiveCallBack, null);
         }
 
+        /*
+         Sunucudan gelen verileri okur ekrana yazar.
+         */
         public static void ReveiveCallBack(IAsyncResult asyncResult)
         {
             try
             {
-                
-                    int gelenVeriUzunluğu = networkStream.EndRead(asyncResult);
-               
-                    byte[] data = new byte[gelenVeriUzunluğu];
-                    Array.Copy(buffer, data, gelenVeriUzunluğu);
-                    string gelenmetin = Encoding.UTF8.GetString(data);
+
+                int gelenVeriUzunluğu = networkStream.EndRead(asyncResult);
+
+                byte[] data = new byte[gelenVeriUzunluğu];
+                Array.Copy(buffer, data, gelenVeriUzunluğu);
+                string gelenmetin = Encoding.UTF8.GetString(data);
 
                 if (gelenmetin != "")
                 {
@@ -63,7 +80,7 @@ namespace client
                 }
                 else
                 {
-                    networkStream = null;
+                    ConFlag=true;
                     Console.WriteLine("Bağlantı Kesildi");
                 }
 
@@ -71,10 +88,14 @@ namespace client
             }
             catch (Exception e)
             {
-                
+
                 return;
             }
         }
+
+        /*
+         Mesaj gönderme işlemini gerçekleştirir.
+         */
         public static void SendMessage(DataTransferObject Dto)
         {
             string JsonString = JsonConvert.SerializeObject(Dto);
@@ -84,30 +105,55 @@ namespace client
             {
                 if (networkStream != null)
                 {
-                   networkStream.BeginWrite(result, 0, result.Length,SendCallBack, null);
-            
+                    networkStream.BeginWrite(result, 0, result.Length, SendCallBack, null);
+
                 }
             }
             catch (Exception ex)
             {
 
             }
-            
+
         }
 
         public static void SendCallBack(IAsyncResult asyncResult)
         {
-            
+
             networkStream.EndWrite(asyncResult);
         }
 
+        /*
+         Giriş yaparken sunucuya kullanıcı adını yollar.
+         */
         public static void LoginName()
         {
             if (networkStream != null)
             {
                 Requests.Request("loginName");
             }
-            
+
+        }
+
+        /*
+         Chat ortamından alınan mesajların gönderilmesini sağlar.
+         */
+        public static void StartWrite()
+        {
+            while (true)
+            {
+                if (networkStream != null)
+                {
+                    string text = Console.ReadLine();
+                    Requests.Request(text);
+                }
+
+                if (ConFlag)
+                {
+                    Console.WriteLine("Bir tuşa basarak programı kapatabilirsiniz.");
+                    Console.ReadKey();
+                    break;
+                }
+            }
         }
     }
 }

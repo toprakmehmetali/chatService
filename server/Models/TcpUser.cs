@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
 using Newtonsoft.Json;
-using server.Models;
 
 namespace server.Models
 {
@@ -40,7 +34,12 @@ namespace server.Models
             ReadStream();
         }
 
-        public override void StartStreamRead()
+        /*
+         Tcp deki virtual metodu ezerek gelen requesti tipine göre yapılacak işleme yönlendirir.
+         Art arda mesaj göndermeyi engeller.
+         Art arda mesaj gönderme işlemi tekrarlanırsa kullanıcıyı sohbet odasından atar.
+         */
+        public override void StartStreamRead(string InComingText)
         {
 
             DataTransferObject dataTransferObject = JsonConvert.DeserializeObject<DataTransferObject>(InComingText);
@@ -64,29 +63,39 @@ namespace server.Models
                     SendMessage(Messages.Messages.NotSendQuickMessage);
                 }
             }
-
-            
-            
         }
 
+        /*
+         Kullanıcının giriş yaparken isim belirlemesini sağlar.
+         Sohbet odasındaki diğer kullanıcılara giriş yaptığını bildirir.
+        */
         public void LoginNameRequest(DataTransferObject dataTransferObject)
         {
             if (dataTransferObject.Request == "")
             {
-                dataTransferObject.Request = "Anonymous";
+                dataTransferObject.Request = $"{Id}.Anonymous";
             }
             Name = dataTransferObject.Request;
             Server.SendMessageAllSocket(Id, $"{Name} {Messages.Messages.UserOnline}");
             SendMessage(Messages.Messages.Login);
         }
 
+        /*
+         Kullanıcının consol ekranına "rename" yazarak ismini değiştirmesini sağlar.
+        */
         public void RenameRequest(DataTransferObject dataTransferObject)
         {
+            if (dataTransferObject.Request == "")
+            {
+                dataTransferObject.Request = $"{Id}.Anonymous";
+            }
             Server.SendMessageAllSocket(Id, $"{Name} isimli kullanıcı adını {dataTransferObject.Request} olarak değiştirdi.");
             Name = dataTransferObject.Request;
             SendMessage(Messages.Messages.NameChanged);
         }
-
+        /*
+         Request tiplerine göre işlemleri yönlendirir
+        */
         public void RequestType(DataTransferObject dataTransferObject)
         {
             switch (dataTransferObject.RequestType)
