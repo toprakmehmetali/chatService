@@ -19,7 +19,16 @@ namespace client
         public static byte[] buffer = new byte[4096];
         public static void Connect()
         {
-            socket.BeginConnect(ServerSettings.Host,ServerSettings.Port,new AsyncCallback(ConnectCallBack),null);
+            try
+            {
+                socket.BeginConnect(Config.Config.ConfigJson.ServerSettings.Host, Config.Config.ConfigJson.ServerSettings.Port, new AsyncCallback(ConnectCallBack), null);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         private static void ConnectCallBack(IAsyncResult asyncResult)
@@ -49,9 +58,13 @@ namespace client
                 if (gelenmetin != "")
                 {
                     Console.WriteLine($"{gelenmetin}");
-                
                     networkStream.BeginRead(buffer, 0, 4096, ReveiveCallBack, null);
 
+                }
+                else
+                {
+                    networkStream = null;
+                    Console.WriteLine("Bağlantı Kesildi");
                 }
 
 
@@ -69,7 +82,11 @@ namespace client
 
             try
             {
-                networkStream.BeginWrite(result, 0, result.Length,SendCallBack, null);
+                if (networkStream != null)
+                {
+                   networkStream.BeginWrite(result, 0, result.Length,SendCallBack, null);
+            
+                }
             }
             catch (Exception ex)
             {
@@ -80,8 +97,17 @@ namespace client
 
         public static void SendCallBack(IAsyncResult asyncResult)
         {
+            
             networkStream.EndWrite(asyncResult);
         }
-        
+
+        public static void LoginName()
+        {
+            if (networkStream != null)
+            {
+                Requests.Request("loginName");
+            }
+            
+        }
     }
 }

@@ -17,5 +17,6 @@ namespace server.Messages
         public static string UserOffline = "Kullanıcı çevrimdışı.";
         public static string UserOnline = "Kullanıcı çevrimiçi.";
         public static string NameChanged = "Kullanıcı adınız değiştirildi.";
+        public static string Login = "Başarıyla sunucuya giriş yaptınız. Sohbete başlayabilirsiniz.";
     }
 }

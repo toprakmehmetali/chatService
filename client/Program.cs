@@ -1,7 +1,7 @@
 ﻿using client;
 using client.Config;
 using client.Models;
-using ServerSettings = client.ServerSettings;
+
 
 namespace server
 {
@@ -9,23 +9,25 @@ namespace server
     {
         static void Main(string[] args)
         {
-            
             Config.LoadConfigJson();
-            ServerSettings.SetServerSettings();
             Client.Connect();
-            Console.WriteLine("Bağlanıldı");
-            Console.WriteLine("metin girin");
+            Thread.Sleep(300);
+            Client.LoginName();
             while (true)
             {
-                
-                if (Client.networkStream.CanRead)
+                if (Client.networkStream != null)
                 {
                     string text = Console.ReadLine();
                     Requests.Request(text);
                 }
+                else
+                {
+                    break;
+
+                }
             }
-            
-            
+            Console.WriteLine("Bir tuşa basarak programı kapatabilirsiniz.");
+            Console.ReadKey();
         }
     }
 }

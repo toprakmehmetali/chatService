@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,9 +16,12 @@ namespace server
     {
         public static int _maxUser { get;private set; }
         public static int _port { get; private set;}
+
         public static TcpListener serverListener;
 
-        public static Tcp[] clients;
+        public static TcpUser[] clients;
+
+        public static Tcp tcp;
 
         public static void StartServer()
         {
@@ -33,8 +35,10 @@ namespace server
 
         public static void ListenServer()
         {
-            serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
-            
+            while (true)
+            {
+                serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
+            }
         }
 
         public static void AcceptClientCallBack(IAsyncResult asyncResult)
@@ -42,14 +46,16 @@ namespace server
             TcpClient socket = serverListener.EndAcceptTcpClient(asyncResult);
             foreach (var client in clients)
             {
-                if (client.socket == null)
+                if (client.Socket == null)
                 {
                     client.Connect(socket);
                     return;
                 }
             }
             
-            socket.Close();
+            tcp.ConnectSocket(socket);
+            tcp.SendMessage("Sunucu dolu.");
+            tcp.DisconnectSocket();
             Console.WriteLine(Messages.Messages.ServerFull);
         }
 
@@ -57,7 +63,7 @@ namespace server
         {
             for (int i = 0; i < _maxUser; i++)
             {
-                clients[i] = new Tcp(i);
+                clients[i] = new TcpUser(i);
                 clients[i].Name = $"{i}.Anonymous";
             }
         }
@@ -66,18 +72,28 @@ namespace server
         {
             foreach (var client in clients)
             {
-                if (client.id != id)
+                if (client.Id != id)
                 {
                     client.SendMessage(message);
                 }
             }
         }
 
-        public static void SendMessageById(int id, string messages)
+        public static void SendMessageById(int id, string message)
         {
-            clients[id].SendMessage(messages);
+            clients[id].SendMessage(message);
         }
-        
+        public static void SendMessageByName(string name,string message)
+        {
+            foreach (var client in clients)
+            {
+                if (client.Name == name)
+                {
+                    client.SendMessage(message);
+                }
+            }
+        }
+
         public static void SetServerSettings()
         {
             _maxUser = Config.Config.ConfigJson.ServerSettings.MaxUser;
@@ -86,7 +102,8 @@ namespace server
 
         public static void SetEmptyArrayClients()
         {
-            clients = new Tcp[_maxUser];
+            clients = new TcpUser[_maxUser];
+            tcp = new Tcp();
         }
     }
 }

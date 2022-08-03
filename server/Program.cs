@@ -7,13 +7,8 @@
             Config.Config.LoadConfigJson();
             Server.SetServerSettings();
             Server.SetEmptyArrayClients();
-            Server.StartServer();
-            while (true)
-            {
-               Server.ListenServer(); 
-            }
-            
-            
+            Server.StartServer(); 
+            Server.ListenServer();
         }
         
     }
