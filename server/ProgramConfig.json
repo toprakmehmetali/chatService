@@ -1,0 +1,7 @@
+{
+ "ServerSettings": {
+  "MaxUser": 500,
+  "Port": 8081 
+ } 
+  
+}

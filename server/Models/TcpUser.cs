@@ -5,7 +5,6 @@ namespace server.Models
 {
     public class TcpUser : Tcp
     {
-       
         public string Name;
         public DateTime lastMessageTime;
         public int warnCount = 0;

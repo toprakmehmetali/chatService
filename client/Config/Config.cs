@@ -14,7 +14,7 @@ namespace client.Config
     public static void LoadConfigJson()
     {
 
-        using (StreamReader ProgramConfig = new StreamReader("./ProgramConfig.json"))
+        using (StreamReader ProgramConfig = new StreamReader("C:\\project\\chatService\\client\\ProgramConfig.json"))
         {
             var jsonconfig = ProgramConfig.ReadToEnd();
             ConfigJson = JsonConvert.DeserializeObject<ConfigJson>(jsonconfig);
