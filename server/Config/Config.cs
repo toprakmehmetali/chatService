@@ -13,12 +13,15 @@ namespace server.Config
         public static ConfigJson ConfigJson;
         public static void LoadConfigJson()
         {
-           
-            using (StreamReader ProgramConfig = new StreamReader("C:\\project\\chatService\\server\\ProgramConfig.json"))
+            string path = Directory.GetCurrentDirectory();
+            path = path.Replace("bin\\Debug\\net6.0", "").Replace("\\", "\\\\");
+            using (StreamReader ProgramConfig = new StreamReader($"{path}ProgramConfig.json"))
             {
                 var jsonconfig = ProgramConfig.ReadToEnd();
                 ConfigJson = JsonConvert.DeserializeObject<ConfigJson>(jsonconfig);
             }
         }
     }
+
 }
+
