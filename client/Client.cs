@@ -131,7 +131,6 @@ namespace client
             {
                 Requests.Request("loginName");
             }
-
         }
 
         /*

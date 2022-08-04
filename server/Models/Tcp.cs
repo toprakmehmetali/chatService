@@ -85,7 +85,7 @@ namespace server.Models
                 Data = new byte[dataLength];
                 Array.Copy(Buffer, Data, dataLength);
                 string InComingText = Encoding.UTF8.GetString(Data);
-                StartStreamRead(InComingText);
+                IncomingRequest(InComingText);
                 if (Stream != null)
                 {
                     ReadStream();
@@ -102,7 +102,7 @@ namespace server.Models
         /*
          Okuma yapıldığında ne yapılacak ise metod ezilerek işlemin gerçekleşmesi sağlanır
          */
-        public virtual void StartStreamRead(string InComingText)
+        public virtual void IncomingRequest(string InComingText)
         {
 
         }

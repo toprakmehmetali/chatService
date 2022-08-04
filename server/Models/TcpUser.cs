@@ -18,7 +18,7 @@ namespace server.Models
         {
 
             Server.SendMessageAllSocket(Id, $"{Name} adlı {Messages.Messages.UserOffline}");
-            Console.WriteLine($"{Socket.Client.RemoteEndPoint} {Messages.Messages.UserOffline}.");
+            Console.WriteLine($"{Socket.Client.RemoteEndPoint} {Messages.Messages.UserDisconnected}");
             DisconnectSocket();
             this.Stream = null;
             this.Socket = null;
@@ -38,7 +38,7 @@ namespace server.Models
          Art arda mesaj göndermeyi engeller.
          Art arda mesaj gönderme işlemi tekrarlanırsa kullanıcıyı sohbet odasından atar.
          */
-        public override void StartStreamRead(string InComingText)
+        public override void IncomingRequest(string InComingText)
         {
 
             DataTransferObject dataTransferObject = JsonConvert.DeserializeObject<DataTransferObject>(InComingText);
@@ -75,8 +75,8 @@ namespace server.Models
                 dataTransferObject.Request = $"{Id}.Anonymous";
             }
             Name = dataTransferObject.Request;
-            Server.SendMessageAllSocket(Id, $"{Name} {Messages.Messages.UserOnline}");
-            SendMessage(Messages.Messages.Login);
+            Server.SendMessageAllSocket(Id, $"{Name} adlı {Messages.Messages.UserOnline}");
+            SendMessage(Messages.Messages.Login + "\nSohbet esnasında \"rename\" yazarak kullanıcı adınızı değiştirebilirsiniz.");
         }
 
         /*
